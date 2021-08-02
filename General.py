@@ -46,8 +46,8 @@ def request_forecast(city_id):
                             '{0:2.0f}'.format(forecast['wind']['speed']) + " м/с",
                             get_wind_direction(forecast['wind']['deg']),
                             forecast['weather'][0]['description']))
-            a = [weather_of_day.append(forecast_string) if int(forecast_string[9])
-                                                           == int(str(datetime.date.today())[9]) + 1 else None]
+            [weather_of_day.append(forecast_string) if int(forecast_string[9])
+                                                        == int(str(datetime.date.today())[9]) + 1 else None]
         return place, weather_of_day
     except Exception as e:
         print("Exception (forecast):", e)
