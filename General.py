@@ -4,11 +4,10 @@ import requests
 
 
 appid = "19cb7aa1bae799b795198910a7b33414"
-value2 = []
 
 
 def get_wind_direction(deg):
-    windrose = ['С ', 'СВ', ' В', 'ЮВ', 'Ю ', 'ЮЗ', ' З', 'СЗ']
+    windrose = ['Север ', 'СевероВосток', ' Восток', 'ЮгоВосток', 'Юг ', 'ЮгоЗапад', ' Запад', 'СевероЗапад']
     for i in range(0, 8):
         step = 45.
         min = i*step - 45/2.
@@ -36,35 +35,34 @@ def get_city_id(s_city_name):
 
 
 def request_forecast(city_id):
-    global value2
+    weather_of_day = []
     try:
         res = requests.get("http://api.openweathermap.org/data/2.5/forecast",
                            params={'id': city_id, 'units': 'metric', 'lang': 'ru', 'APPID': appid})
         data = res.json()
-        temp = ('город:', data['city']['name'], data['city']['country'])
-        value1 = ' '.join(temp)
-        for i in data['list']:
-            temp = ((i['dt_txt'])[:16], '{0:+3.0f}'.format(i['main']['temp']),
-                    '{0:2.0f}'.format(i['wind']['speed']) + " м/с",
-                    get_wind_direction(i['wind']['deg']),
-                    i['weather'][0]['description'])
-            temp2 = " ".join(temp)
-            [value2.append(temp2) if int(temp2[9]) == int(str(datetime.date.today())[9]) + 1 else None]
-        print(value2)
-        return value1, value2
+        place = ' '.join(('город:', data['city']['name'], data['city']['country']))
+        for forecast in data['list']:
+            forecast_string = " ".join(((forecast['dt_txt'])[:16], '{0:+3.0f}'.format(forecast['main']['temp']),
+                            '{0:2.0f}'.format(forecast['wind']['speed']) + " м/с",
+                            get_wind_direction(forecast['wind']['deg']),
+                            forecast['weather'][0]['description']))
+            a = [weather_of_day.append(forecast_string) if int(forecast_string[9])
+                                                           == int(str(datetime.date.today())[9]) + 1 else None]
+        return place, weather_of_day
     except Exception as e:
         print("Exception (forecast):", e)
         pass
 
 
-city_id = get_city_id('Moscow, Ru')
-value1, value2 = request_forecast(city_id)
+
 app = Flask(__name__)
 
 
 @app.route('/')
 def page():
-    return render_template('page.html', value1=value1, value2=value2)
+    city_id = get_city_id('Moscow, Ru')
+    place, weather_of_day = request_forecast(city_id)
+    return render_template('page.html', place=place, weather_of_day=weather_of_day)
 
 
 if __name__ == "__main__":
