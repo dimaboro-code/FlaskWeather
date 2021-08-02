@@ -1,9 +1,10 @@
+import datetime
 from flask import Flask, render_template
 import requests
 
 
 appid = "19cb7aa1bae799b795198910a7b33414"
-value2 = ""
+value2 = []
 
 
 def get_wind_direction(deg):
@@ -47,8 +48,9 @@ def request_forecast(city_id):
                     '{0:2.0f}'.format(i['wind']['speed']) + " м/с",
                     get_wind_direction(i['wind']['deg']),
                     i['weather'][0]['description'])
-
-            value2 += '\n' + " ".join(temp)
+            temp2 = " ".join(temp)
+            [value2.append(temp2) if int(temp2[9]) == int(str(datetime.date.today())[9]) + 1 else None]
+        print(value2)
         return value1, value2
     except Exception as e:
         print("Exception (forecast):", e)
