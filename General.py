@@ -29,7 +29,6 @@ def get_city_id(s_city_name):
         city_id = data['list'][0]['id']
     except Exception as e:
         print("Exception (find):", e)
-        pass
     assert isinstance(city_id, int)
     return city_id
 
@@ -51,8 +50,6 @@ def request_forecast(city_id):
         return place, weather_of_day
     except Exception as e:
         print("Exception (forecast):", e)
-        pass
-
 
 
 app = Flask(__name__)
